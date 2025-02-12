@@ -14,6 +14,8 @@ class Money(private val amount: BigInteger) {
 
     fun isPositive() = amount > BigInteger.ZERO
 
+    fun longValue() = amount.toLong()
+
     operator fun minus(value: Money) = Money(amount - value.amount)
 
     operator fun plus(value: Money) = Money(amount - value.amount)

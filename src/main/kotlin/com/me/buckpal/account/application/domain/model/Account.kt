@@ -1,6 +1,9 @@
 package com.me.buckpal.account.application.domain.model
 
-class Account(val id: AccountId, private var balance: Money) {
+class Account(val id: AccountId, balance: Money) {
+    var balance = balance
+        private set
+
     fun withdraw(amount: Money, targetAccountId: AccountId): Boolean {
         if (!mayWithdraw(amount)) {
             return false
