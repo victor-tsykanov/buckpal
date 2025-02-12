@@ -5,7 +5,7 @@ import com.me.buckpal.account.application.port.`in`.SendMoneyUseCase
 import com.me.buckpal.account.application.port.out.AccountLock
 import com.me.buckpal.account.application.port.out.LoadAccountPort
 import com.me.buckpal.account.application.port.out.UpdateAccountStatePort
-import com.me.buckpal.common.UseCase
+import com.me.buckpal.common.stereotype.UseCase
 import jakarta.transaction.Transactional
 
 @Transactional

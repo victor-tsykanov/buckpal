@@ -3,10 +3,10 @@ package com.me.buckpal.account.adapter.out.persistence
 import com.me.buckpal.account.application.domain.model.Account
 import com.me.buckpal.account.application.port.out.LoadAccountPort
 import com.me.buckpal.account.application.port.out.UpdateAccountStatePort
+import com.me.buckpal.common.stereotype.PersistenceAdapter
 import jakarta.persistence.EntityNotFoundException
-import org.springframework.stereotype.Component
 
-@Component
+@PersistenceAdapter
 class AccountPersistenceAdapter(
     private val accountRepository: SpringDataAccountRepository,
     private val accountMapper: AccountMapper,

@@ -4,11 +4,13 @@ import com.me.buckpal.account.application.domain.model.Account.AccountId
 import com.me.buckpal.account.application.domain.model.Money
 import com.me.buckpal.account.application.port.`in`.SendMoneyCommand
 import com.me.buckpal.account.application.port.`in`.SendMoneyUseCase
+import com.me.buckpal.common.stereotype.WebAdapter
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
+@WebAdapter
 class SendMoneyController(private val sendMoneyUseCase: SendMoneyUseCase) {
     @PostMapping("/accounts/send/{sourceAccountId}/{targetAccountId}/{amount}")
     fun sendMoney(
