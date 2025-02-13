@@ -23,18 +23,65 @@ class SendMoneyServiceTest {
 
     @Test
     fun transactionSucceeds() {
+        val transferAmount = Money.of(100)
+
         val sourceAccount = givenSourceAccount()
         val targetAccount = givenTargetAccount()
+        givenWithdrawalWillSucceed(sourceAccount)
+        givenDepositWillSucceed(targetAccount)
 
         val success = sendMoneyService.sendMoney(
             SendMoneyCommand(
                 sourceAccount.id,
                 targetAccount.id,
-                Money.of(100),
+                transferAmount,
             )
         )
 
         assertThat(success).isTrue()
+
+        then(accountLock).should().lockAccount(eq(sourceAccount.id))
+//        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccount.id))
+        then(sourceAccount).should().withdraw(any<Money>(), any<AccountId>())
+        then(accountLock).should().releaseAccount(eq(sourceAccount.id))
+
+        then(accountLock).should().lockAccount(eq(targetAccount.id))
+//        then(targetAccount).should().deposit(eq(transferAmount), eq(sourceAccount.id))
+        then(targetAccount).should().deposit(any<Money>(), any<AccountId>())
+        then(accountLock).should().releaseAccount(eq(targetAccount.id))
+
+        then(updateAccountStatePort).should().updateBalance(eq(sourceAccount))
+        then(updateAccountStatePort).should().updateBalance(eq(targetAccount))
+    }
+
+    @Test
+    fun transactionFails() {
+        val transferAmount = Money.of(100)
+
+        val sourceAccount = givenSourceAccount()
+        val targetAccount = givenTargetAccount()
+        givenWithdrawalWillFail(sourceAccount)
+        givenDepositWillSucceed(targetAccount)
+
+        val success = sendMoneyService.sendMoney(
+            SendMoneyCommand(
+                sourceAccount.id,
+                targetAccount.id,
+                transferAmount,
+            )
+        )
+
+        assertThat(success).isFalse()
+
+        then(accountLock).should().lockAccount(eq(sourceAccount.id))
+//        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccount.id))
+        then(sourceAccount).should().withdraw(any<Money>(), any<AccountId>())
+        then(accountLock).should().releaseAccount(eq(sourceAccount.id))
+
+        then(accountLock).should(times(0)).lockAccount(eq(targetAccount.id))
+
+        then(updateAccountStatePort).should(times(0)).updateBalance(eq(sourceAccount))
+        then(updateAccountStatePort).should(times(0)).updateBalance(eq(targetAccount))
     }
 
     private fun givenSourceAccount() = givenAccountWithId(AccountId(41))
@@ -48,5 +95,13 @@ class SendMoneyServiceTest {
 
     private fun givenWithdrawalWillSucceed(account: Account) {
         given(account.withdraw(any<Money>(), any<AccountId>())).willReturn(true)
+    }
+
+    private fun givenWithdrawalWillFail(account: Account) {
+        given(account.withdraw(any<Money>(), any<AccountId>())).willReturn(false)
+    }
+
+    private fun givenDepositWillSucceed(account: Account) {
+        given(account.deposit(any<Money>(), any<AccountId>())).willReturn(true)
     }
 }

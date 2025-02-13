@@ -9,6 +9,8 @@ plugins {
 group = "com.me"
 version = "0.0.1-SNAPSHOT"
 
+val mockitoAgent = configurations.create("mockitoAgent")
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
@@ -30,8 +32,10 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("com.h2database:h2")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
+    testImplementation(libs.mockito.core)
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     runtimeOnly("com.h2database:h2")
+    mockitoAgent(libs.mockito.core) { isTransitive = false }
 }
 
 kotlin {
@@ -48,4 +52,5 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+    jvmArgs("-javaagent:${mockitoAgent.asPath}")
 }
