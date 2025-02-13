@@ -18,7 +18,7 @@ class Money(private val amount: BigInteger) {
 
     operator fun minus(value: Money) = Money(amount - value.amount)
 
-    operator fun plus(value: Money) = Money(amount - value.amount)
+    operator fun plus(value: Money) = Money(amount + value.amount)
 
     operator fun compareTo(other: Money) = amount.compareTo(other.amount)
 }
