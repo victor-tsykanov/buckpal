@@ -3,7 +3,7 @@ package com.me.buckpal.account.application.domain.model
 import java.math.BigInteger
 
 
-class Money(private val amount: BigInteger) {
+data class Money(private val amount: BigInteger) {
     companion object {
         val ZERO = Money.of(0)
 
