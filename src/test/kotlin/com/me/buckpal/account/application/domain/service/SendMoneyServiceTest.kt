@@ -40,15 +40,16 @@ class SendMoneyServiceTest {
 
         assertThat(success).isTrue()
 
-        then(accountLock).should().lockAccount(eq(sourceAccount.id))
-//        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccount.id))
-        then(sourceAccount).should().withdraw(any<Money>(), any<AccountId>())
-        then(accountLock).should().releaseAccount(eq(sourceAccount.id))
+        val sourceAccountId = sourceAccount.id
+        val targetAccountId = targetAccount.id
 
-        then(accountLock).should().lockAccount(eq(targetAccount.id))
-//        then(targetAccount).should().deposit(eq(transferAmount), eq(sourceAccount.id))
-        then(targetAccount).should().deposit(any<Money>(), any<AccountId>())
-        then(accountLock).should().releaseAccount(eq(targetAccount.id))
+        then(accountLock).should().lockAccount(eq(sourceAccountId))
+        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccountId))
+        then(accountLock).should().releaseAccount(eq(sourceAccountId))
+
+        then(accountLock).should().lockAccount(eq(targetAccountId))
+        then(targetAccount).should().deposit(eq(transferAmount), eq(sourceAccountId))
+        then(accountLock).should().releaseAccount(eq(targetAccountId))
 
         then(updateAccountStatePort).should().updateBalance(eq(sourceAccount))
         then(updateAccountStatePort).should().updateBalance(eq(targetAccount))
@@ -73,12 +74,14 @@ class SendMoneyServiceTest {
 
         assertThat(success).isFalse()
 
-        then(accountLock).should().lockAccount(eq(sourceAccount.id))
-//        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccount.id))
-        then(sourceAccount).should().withdraw(any<Money>(), any<AccountId>())
-        then(accountLock).should().releaseAccount(eq(sourceAccount.id))
+        val sourceAccountId = sourceAccount.id
+        val targetAccountId = targetAccount.id
 
-        then(accountLock).should(times(0)).lockAccount(eq(targetAccount.id))
+        then(accountLock).should().lockAccount(eq(sourceAccountId))
+        then(sourceAccount).should().withdraw(eq(transferAmount), eq(targetAccountId))
+        then(accountLock).should().releaseAccount(eq(sourceAccountId))
+
+        then(accountLock).should(times(0)).lockAccount(eq(targetAccountId))
 
         then(updateAccountStatePort).should(times(0)).updateBalance(eq(sourceAccount))
         then(updateAccountStatePort).should(times(0)).updateBalance(eq(targetAccount))
