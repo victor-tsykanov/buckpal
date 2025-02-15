@@ -33,6 +33,7 @@ dependencies {
     testImplementation("com.h2database:h2")
     testImplementation("org.mockito.kotlin:mockito-kotlin:3.2.0")
     testImplementation(libs.mockito.core)
+    testImplementation("com.tngtech.archunit:archunit:1.4.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     runtimeOnly("com.h2database:h2")
     mockitoAgent(libs.mockito.core) { isTransitive = false }
