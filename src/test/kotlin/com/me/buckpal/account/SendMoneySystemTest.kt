@@ -7,18 +7,20 @@ import org.assertj.core.api.BDDAssertions.then
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.test.web.client.TestRestTemplate
-import org.springframework.boot.test.web.client.exchange
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpMethod
+import org.springframework.boot.test.web.server.LocalServerPort
 import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
 import org.springframework.test.context.jdbc.Sql
+import org.springframework.web.client.RestClient
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class SendMoneySystemTest {
-    @Autowired
-    private lateinit var restTemplate: TestRestTemplate
+
+    @LocalServerPort
+    private var localServerPort: Int = 0
+
+    private val restClient: RestClient
+        get() = RestClient.create("http://localhost:$localServerPort")
 
     @Autowired
     private lateinit var loadAccountPort: LoadAccountPort
@@ -38,19 +40,17 @@ class SendMoneySystemTest {
     }
 
     private fun whenSendMoney(sourceAccountId: AccountId, targetAccountId: AccountId, amount: Money) =
-        restTemplate.exchange<Void>(
-            "/accounts/send/{sourceAccountId}/{targetAccountId}/{amount}",
-            HttpMethod.POST,
-            HttpEntity(
-                null,
-                HttpHeaders().also {
-                    it.add(HttpHeaders.CONTENT_TYPE, "application/json")
-                },
-            ),
-            sourceAccountId.value,
-            targetAccountId.value,
-            amount.longValue(),
-        )
+        restClient
+            .post()
+            .uri(
+                "/accounts/send/{sourceAccountId}/{targetAccountId}/{amount}",
+                sourceAccountId.value,
+                targetAccountId.value,
+                amount.longValue(),
+            )
+            .contentType(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .toBodilessEntity()
 
     private fun sourceAccount() = loadAccountPort.load(AccountId(1))
 
